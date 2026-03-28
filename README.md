@@ -1,6 +1,6 @@
 # closing-checklist
 
-An interactive closing checklist for end-of-shift use at Paris Baguette.
+An interactive closing checklist for end-of-shift use.
 
 ## Features
 
