@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Closing Checklist</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #ffffff; --bg-secondary: #f5f4f0;
+      --text-primary: #1a1a18; --text-secondary: #6b6b66; --text-tertiary: #a0a09a;
+      --border-light: rgba(0,0,0,0.12); --border-med: rgba(0,0,0,0.2);
+      --radius-md: 8px; --radius-lg: 12px;
+      --green: #1D9E75; --green-bg: #E1F5EE; --green-text: #085041;
+      --blue-bg: #E6F1FB; --blue-text: #0C447C;
+      --amber-bg: #FAEEDA; --amber-text: #633806;
+      --purple-bg: #EEEDFE; --purple-text: #3C3489;
+      --red-bg: #FCEBEB; --red-text: #791F1F; --red-border: #F09595; --red-hover-text: #A32D2D;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1e1e1c; --bg-secondary: #2a2a28;
+        --text-primary: #f0ede6; --text-secondary: #9b9b95; --text-tertiary: #666660;
+        --border-light: rgba(255,255,255,0.1); --border-med: rgba(255,255,255,0.2);
+        --green-bg: #085041; --green-text: #9FE1CB;
+        --blue-bg: #0C447C; --blue-text: #B5D4F4;
+        --amber-bg: #633806; --amber-text: #FAC775;
+        --purple-bg: #3C3489; --purple-text: #CECBF6;
+        --red-bg: #791F1F; --red-text: #F7C1C1; --red-border: #A32D2D; --red-hover-text: #F7C1C1;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 2rem 1.25rem;
+    }
+
+    .container { max-width: 720px; margin: 0 auto; }
+
+    h1 { font-size: 22px; font-weight: 500; margin-bottom: 0.25rem; }
+    .subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5; }
+
+    .progress-bar-wrap {
+      margin-bottom: 1.75rem; padding: 14px 16px;
+      background: var(--bg-primary); border-radius: var(--radius-lg);
+      border: 0.5px solid var(--border-light);
+    }
+    .progress-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+    .progress-label { font-size: 13px; color: var(--text-secondary); }
+    .progress-count { font-size: 13px; font-weight: 500; }
+    .bar-track { height: 5px; border-radius: 99px; background: var(--border-light); overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width 0.3s ease; }
+
+    .block { margin-bottom: 1.5rem; }
+
+    .time-header {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 10px; flex-wrap: wrap;
+    }
+    .time-label {
+      font-size: 13px; font-weight: 500; color: var(--text-secondary);
+      letter-spacing: 0.04em; white-space: nowrap;
+    }
+    .time-line { flex: 1; min-width: 16px; height: 0.5px; background: var(--border-light); }
+    .section-tag {
+      font-size: 11px; font-weight: 500; padding: 3px 9px;
+      border-radius: var(--radius-md); white-space: nowrap;
+    }
+    .tag-display  { background: var(--blue-bg);   color: var(--blue-text); }
+    .tag-drink    { background: var(--green-bg);   color: var(--green-text); }
+    .tag-pastry   { background: var(--amber-bg);   color: var(--amber-text); }
+    .tag-cleaning { background: var(--purple-bg);  color: var(--purple-text); }
+    .tag-close    { background: var(--red-bg);     color: var(--red-text); }
+
+    .items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 6px; margin-bottom: 8px;
+    }
+
+    .item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg-primary); border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-light);
+      cursor: pointer; transition: background 0.15s, opacity 0.2s;
+      user-select: none; -webkit-tap-highlight-color: transparent;
+      min-height: 44px;
+    }
+    .item:hover { background: var(--bg-secondary); }
+    .item.done { opacity: 0.45; }
+    .item.done .item-text { text-decoration: line-through; }
+    .item.custom-item { border-style: dashed; }
+
+    .checkbox {
+      width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px;
+      border-radius: 5px; border: 0.5px solid var(--border-med);
+      background: var(--bg-primary);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .item.done .checkbox { background: var(--green); border-color: var(--green); }
+    .check-svg { display: none; }
+    .item.done .check-svg { display: block; }
+
+    .item-text { font-size: 13.5px; color: var(--text-primary); line-height: 1.4; flex: 1; }
+    .note { font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; }
+
+    .remove-btn {
+      background: none; border: none; cursor: pointer; padding: 4px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-tertiary); opacity: 0;
+      transition: opacity 0.15s, color 0.15s; flex-shrink: 0;
+      min-width: 24px; min-height: 24px;
+    }
+    .item:hover .remove-btn { opacity: 1; }
+    .remove-btn:hover { color: #E24B4A; }
+
+    .add-row { display: flex; gap: 6px; align-items: center; margin-top: 2px; }
+    .add-input {
+      flex: 1; font-size: 14px; padding: 8px 12px;
+      border-radius: var(--radius-md); border: 0.5px dashed var(--border-med);
+      background: var(--bg-primary); color: var(--text-primary);
+      outline: none; height: 40px; font-family: inherit;
+      -webkit-appearance: none;
+    }
+    .add-input:focus { border-color: var(--green); border-style: solid; }
+    .add-input::placeholder { color: var(--text-tertiary); }
+
+    .add-btn {
+      height: 40px; padding: 0 14px; font-size: 13px; font-family: inherit;
+      border-radius: var(--radius-md); border: 0.5px solid var(--border-med);
+      background: transparent; color: var(--text-secondary);
+      cursor: pointer; white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .add-btn:hover { background: var(--bg-secondary); color: var(--text-primary); }
+    .add-btn:active { opacity: 0.7; }
+
+    .bottom-actions {
+      display: flex; gap: 8px; margin-top: 2rem;
+      justify-content: center; flex-wrap: wrap;
+    }
+    .action-btn {
+      padding: 10px 20px; font-size: 13px; font-family: inherit;
+      color: var(--text-secondary); background: transparent;
+      border: 0.5px solid var(--border-med); border-radius: var(--radius-md);
+      cursor: pointer; min-height: 44px;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .action-btn:hover { background: var(--bg-primary); }
+    .action-btn.danger:hover { color: var(--red-hover-text); border-color: var(--red-border); background: var(--red-bg); }
+    .action-btn:active { opacity: 0.7; }
+
+    @media (max-width: 480px) {
+      body { padding: 1.25rem 1rem; }
+      h1 { font-size: 20px; }
+      .items { grid-template-columns: 1fr; }
+      .add-row { flex-direction: row; }
+      .add-input { font-size: 16px; }
+      .bottom-actions { flex-direction: column; align-items: stretch; }
+      .action-btn { text-align: center; }
+      .time-header { gap: 6px; }
+    }
+
+    @media (min-width: 481px) and (max-width: 640px) {
+      .items { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Closing Checklist</h1>
+    <p class="subtitle">Tap items to mark complete. Add custom tasks to any time block. Progress resets on page refresh.</p>
+    <div class="progress-bar-wrap">
+      <div class="progress-top">
+        <span class="progress-label">Closing progress</span>
+        <span class="progress-count" id="prog-count">0 / 0</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="prog-bar" style="width:0%"></div></div>
+    </div>
+    <div id="list"></div>
+    <div class="bottom-actions">
+      <button class="action-btn danger" onclick="resetAll()">Reset checklist</button>
+      <button class="action-btn danger" onclick="clearCustom()">Clear custom entries</button>
+    </div>
+  </div>
+
+  <script>
+    const sections = [
+      { time: "5:30 PM", tag: "display", tagLabel: "Display & Supplies", items: [
+        { text: "Restock candles" },
+        { text: "Put away cake slicers" },
+        { text: "Restock catering boxes, wax paper, paper plates, drink carriers" },
+        { text: "Prep drink batches if needed" },
+        { text: "Restock jams, chocolate bars, novelty items" },
+        { text: "Change water in tong and rag buckets" },
+        { text: "Pack away extra or expired packaged breads" },
+      ]},
+      { time: "6:00 PM", tag: "drink", tagLabel: "Drinks & Smallwares", items: [
+        { text: "Pull macarons" },
+        { text: "Restock to-go bags, boxes, paper bags" },
+        { text: "Restock coffee beans" },
+        { text: "Restock hot drink sleeves + toppings", note: "Khafi, fruity pebbles, custard powders" },
+        { text: "Restock cups, lids, sugars, straws, utensils" },
+        { text: "Wash dishes", note: "Milk frothing cups, blenders" },
+      ]},
+      { time: "6:30 PM", tag: "pastry", tagLabel: "Pastry & Fridges", items: [
+        { text: "Condense pastry display" },
+        { text: "Clean drink dispenser" },
+        { text: "Restock cake boxes" },
+        { text: "Restock grab & go" },
+        { text: "Restock milks in fridge" },
+        { text: "Restock frozen items" },
+        { text: "Restock chips" },
+      ]},
+      { time: "7:30 PM", tag: "cleaning", tagLabel: "Deep Clean — Round 1", items: [
+        { text: "Pull and wrap remaining cake slices" },
+        { text: "Clean trays and tongs" },
+        { text: "Restock chai, matcha, coco powder" },
+        { text: "Restock syrups", note: "Caramel, mocha, vanilla, simple syrup, seasonal" },
+        { text: "Clean bathrooms" },
+        { text: "Wash large pastry pans" },
+        { text: "Pull empty trays, wipe, and reline with wax paper" },
+      ]},
+      { time: "8:00 PM", tag: "cleaning", tagLabel: "Deep Clean — Round 2", items: [
+        { text: "Pack donation bags" },
+        { text: "Wipe down display cases" },
+        { text: "Wash milk jugs", note: "Half & half, skim milk" },
+        { text: "Check and replace trash bags" },
+        { text: "Check patio" },
+      ]},
+      { time: "8:30 PM", tag: "cleaning", tagLabel: "Deep Clean — Round 3", items: [
+        { text: "Wipe down all tables including corner tables" },
+        { text: "Sweep floors" },
+        { text: "Turn off oven" },
+        { text: "Wash tongs and oven utensils" },
+        { text: "Count waste pastries" },
+        { text: "Wash powder spoons" },
+        { text: "Fill water cups for fridge" },
+      ]},
+      { time: "8:55 PM", tag: "close", tagLabel: "Close Out", items: [
+        { text: "Turn off espresso machine" },
+        { text: "Close register" },
+      ]},
+    ];
+
+    const tagClass = { display:"tag-display", drink:"tag-drink", pastry:"tag-pastry", cleaning:"tag-cleaning", close:"tag-close" };
+    let customItems = sections.map(() => []);
+    let checkedState = {};
+
+    function itemKey(si, ii, custom) { return (custom ? 'c' : 's') + si + '-' + ii; }
+
+    function updateProgress() {
+      let total = 0, done = 0;
+      sections.forEach((sec, si) => {
+        sec.items.forEach((_, ii) => { total++; if (checkedState[itemKey(si,ii,false)]) done++; });
+        customItems[si].forEach((_, ii) => { total++; if (checkedState[itemKey(si,ii,true)]) done++; });
+      });
+      document.getElementById("prog-count").textContent = done + " / " + total;
+      document.getElementById("prog-bar").style.width = (total ? Math.round(done/total*100) : 0) + "%";
+    }
+
+    function makeCheckbox() {
+      const cb = document.createElement("div");
+      cb.className = "checkbox";
+      cb.innerHTML = '<svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      return cb;
+    }
+
+    function makeItem(text, note, key, custom, onRemove) {
+      const div = document.createElement("div");
+      div.className = "item" + (custom ? " custom-item" : "");
+      if (checkedState[key]) div.classList.add("done");
+
+      const cb = makeCheckbox();
+      if (checkedState[key]) { cb.style.background = "var(--green)"; cb.style.borderColor = "var(--green)"; }
+
+      const textWrap = document.createElement("div");
+      textWrap.style.flex = "1";
+      const textEl = document.createElement("div");
+      textEl.className = "item-text";
+      textEl.textContent = text;
+      textWrap.appendChild(textEl);
+      if (note) {
+        const noteEl = document.createElement("div");
+        noteEl.className = "note";
+        noteEl.textContent = note;
+        textWrap.appendChild(noteEl);
+      }
+
+      div.appendChild(cb);
+      div.appendChild(textWrap);
+
+      if (custom && onRemove) {
+        const rmBtn = document.createElement("button");
+        rmBtn.className = "remove-btn";
+        rmBtn.title = "Remove entry";
+        rmBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 2L10 10M10 2L2 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+        rmBtn.addEventListener("click", e => { e.stopPropagation(); onRemove(); });
+        div.appendChild(rmBtn);
+      }
+
+      div.addEventListener("click", () => {
+        checkedState[key] = !checkedState[key];
+        const checked = checkedState[key];
+        div.classList.toggle("done", checked);
+        cb.style.background = checked ? "var(--green)" : "";
+        cb.style.borderColor = checked ? "var(--green)" : "";
+        updateProgress();
+      });
+
+      return div;
+    }
+
+    function renderSection(si) {
+      const block = document.getElementById("block-" + si);
+      const grid = block.querySelector(".items");
+      grid.innerHTML = "";
+
+      sections[si].items.forEach((item, ii) => {
+        grid.appendChild(makeItem(item.text, item.note || null, itemKey(si,ii,false), false, null));
+      });
+
+      customItems[si].forEach((item, ii) => {
+        grid.appendChild(makeItem(item.text, null, itemKey(si,ii,true), true, () => {
+          delete checkedState[itemKey(si,ii,true)];
+          customItems[si].splice(ii, 1);
+          renderSection(si);
+          updateProgress();
+        }));
+      });
+
+      updateProgress();
+    }
+
+    function render() {
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+
+      sections.forEach((sec, si) => {
+        const block = document.createElement("div");
+        block.className = "block";
+        block.id = "block-" + si;
+
+        const header = document.createElement("div");
+        header.className = "time-header";
+        header.innerHTML =
+          '<span class="time-label">' + sec.time + '</span>' +
+          '<div class="time-line"></div>' +
+          '<span class="section-tag ' + tagClass[sec.tag] + '">' + sec.tagLabel + '</span>';
+        block.appendChild(header);
+
+        const grid = document.createElement("div");
+        grid.className = "items";
+        block.appendChild(grid);
+
+        const addRow = document.createElement("div");
+        addRow.className = "add-row";
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "add-input";
+        input.placeholder = "Add a task to " + sec.time + "...";
+        input.maxLength = 80;
+        const btn = document.createElement("button");
+        btn.className = "add-btn";
+        btn.textContent = "+ Add";
+
+        const addEntry = () => {
+          const val = input.value.trim();
+          if (!val) return;
+          customItems[si].push({ text: val });
+          input.value = "";
+          renderSection(si);
+        };
+
+        btn.addEventListener("click", addEntry);
+        input.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addEntry(); } });
+
+        addRow.appendChild(input);
+        addRow.appendChild(btn);
+        block.appendChild(addRow);
+
+        list.appendChild(block);
+        renderSection(si);
+      });
+
+      updateProgress();
+    }
+
+    function resetAll() {
+      checkedState = {};
+      document.querySelectorAll(".item").forEach(el => {
+        el.classList.remove("done");
+        const cb = el.querySelector(".checkbox");
+        if (cb) { cb.style.background = ""; cb.style.borderColor = ""; }
+      });
+      updateProgress();
+    }
+
+    function clearCustom() {
+      customItems = sections.map(() => []);
+      const keys = Object.keys(checkedState).filter(k => k.startsWith("c"));
+      keys.forEach(k => delete checkedState[k]);
+      sections.forEach((_, si) => renderSection(si));
+      updateProgress();
+    }
+
+    render();
+  </script>
+</body>
+</html>
