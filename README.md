@@ -13,4 +13,3 @@ An interactive closing checklist for end-of-shift use at Paris Baguette.
 - Clear custom entries button to remove any added tasks
 - Custom entries are dashed-bordered to distinguish from defaults
 - Fully responsive — works on desktop and mobile
-- Dark theme styled to Paris Baguette brand colors
