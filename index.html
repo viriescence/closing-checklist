@@ -310,8 +310,8 @@
         checkedState[key] = !checkedState[key];
         const checked = checkedState[key];
         div.classList.toggle("done", checked);
-        cb.style.background = checked ? "var(--green)" : "";
-        cb.style.borderColor = checked ? "var(--green)" : "";
+        cb.style.background = checked ? "var(--green)" : "var(--navy-deep)";
+        cb.style.borderColor = checked ? "var(--green)" : "var(--navy-border-med)";
         updateProgress();
       });
 
